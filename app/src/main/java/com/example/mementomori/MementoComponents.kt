@@ -1,5 +1,6 @@
 package com.example.mementomori
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -446,7 +448,6 @@ fun LifeCalendarCanvas(
         }
     }
 }
-
 @Composable
 fun SelectedLifeWeekBottomBar(
     week: SelectedLifeWeek,
@@ -539,7 +540,7 @@ fun SelectedLifeWeekCard(
 }
 
 @Composable
-fun LegendDot(color: androidx.compose.ui.graphics.Color) {
+fun LegendDot(color: Color) {
     androidx.compose.foundation.layout.Box(
         modifier = Modifier
             .size(10.dp)
@@ -548,7 +549,7 @@ fun LegendDot(color: androidx.compose.ui.graphics.Color) {
 }
 
 @Composable
-fun LegendCurrentWeekDot(color: androidx.compose.ui.graphics.Color) {
+fun LegendCurrentWeekDot(color: Color) {
     androidx.compose.foundation.Canvas(
         modifier = Modifier.size(12.dp)
     ) {
