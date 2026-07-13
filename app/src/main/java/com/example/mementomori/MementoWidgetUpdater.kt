@@ -6,6 +6,8 @@ import android.content.Context
 
 fun refreshMementoWidgets(context: Context) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
+    val stats = loadSavedLifeStats(context)
+    val quote = getDailyMementoQuote(context)
 
     val weekWidgetIds = appWidgetManager.getAppWidgetIds(
         ComponentName(context, MementoWidgetProvider::class.java)
@@ -15,7 +17,9 @@ fun refreshMementoWidgets(context: Context) {
         updateMementoWidget(
             context = context,
             appWidgetManager = appWidgetManager,
-            appWidgetId = widgetId
+            appWidgetId = widgetId,
+            stats = stats,
+            quote = quote
         )
     }
 
@@ -27,7 +31,9 @@ fun refreshMementoWidgets(context: Context) {
         updateMementoProgressWidget(
             context = context,
             appWidgetManager = appWidgetManager,
-            appWidgetId = widgetId
+            appWidgetId = widgetId,
+            stats = stats,
+            quote = quote
         )
     }
 }
