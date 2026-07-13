@@ -1,4 +1,5 @@
 package com.example.mementomori.ui.theme
+
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
