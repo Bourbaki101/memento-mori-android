@@ -686,57 +686,71 @@ fun MementoIntroScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Memento Mori",
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
-        )
-
+        IntroHeader()
         Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Esta app es tuya.",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Tu fecha de nacimiento y esperanza de vida se guardan solo en este dispositivo.",
-            fontSize = 16.sp
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "No hay cuenta.\nNo hay internet.\nNo hay sincronización.",
-            fontSize = 16.sp
-        )
-
+        IntroFeatures()
         Spacer(modifier = Modifier.height(28.dp))
-
-        Text(
-            text = "“No es que tengamos poco tiempo, sino que desperdiciamos mucho.”",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = "— Séneca",
-            fontSize = 14.sp
-        )
-
+        IntroQuote()
         Spacer(modifier = Modifier.height(32.dp))
+        IntroStartButton(onStartClick = onStartClick)
+    }
+}
 
-        Button(
-            onClick = onStartClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Comenzar")
-        }
+@Composable
+private fun IntroHeader() {
+    Text(
+        text = "Memento Mori",
+        fontSize = 36.sp,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun IntroFeatures() {
+    Text(
+        text = "Esta app es tuya.",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    Text(
+        text = "Tu fecha de nacimiento y esperanza de vida se guardan solo en este dispositivo.",
+        fontSize = 16.sp
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Text(
+        text = "No hay cuenta.\nNo hay internet.\nNo hay sincronización.",
+        fontSize = 16.sp
+    )
+}
+
+@Composable
+private fun IntroQuote() {
+    Text(
+        text = "“No es que tengamos poco tiempo, sino que desperdiciamos mucho.”",
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.height(6.dp))
+
+    Text(
+        text = "— Séneca",
+        fontSize = 14.sp
+    )
+}
+
+@Composable
+private fun IntroStartButton(onStartClick: () -> Unit) {
+    Button(
+        onClick = onStartClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Comenzar")
     }
 }
 @Composable
