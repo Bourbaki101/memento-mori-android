@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
-import android.app.PendingIntent
 
 class MementoProgressWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
