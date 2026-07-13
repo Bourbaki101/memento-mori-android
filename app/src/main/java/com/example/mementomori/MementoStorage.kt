@@ -66,6 +66,7 @@ fun markIntroAsSeen(context: Context) {
 }
 
 private const val KEY_CUSTOM_QUOTES = "custom_quotes"
+private const val MAX_QUOTE_LENGTH = 500
 
 fun loadCustomQuotes(context: Context): List<String> {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -93,7 +94,7 @@ fun addCustomQuote(
 ): List<String> {
     val cleanQuote = quote.trim()
 
-    if (cleanQuote.isBlank()) {
+    if (cleanQuote.isBlank() || cleanQuote.length > MAX_QUOTE_LENGTH) {
         return loadCustomQuotes(context)
     }
 

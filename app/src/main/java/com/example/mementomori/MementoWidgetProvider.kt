@@ -12,8 +12,11 @@ class MementoWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
+        val stats = loadSavedLifeStats(context)
+        val quote = getDailyMementoQuote(context)
+
         for (appWidgetId in appWidgetIds) {
-            updateMementoWidget(context, appWidgetManager, appWidgetId)
+            updateMementoWidget(context, appWidgetManager, appWidgetId, stats, quote)
         }
     }
 }
@@ -23,9 +26,10 @@ class MementoWidgetProvider : AppWidgetProvider() {
 fun updateMementoWidget(
     context: Context,
     appWidgetManager: AppWidgetManager,
-    appWidgetId: Int
+    appWidgetId: Int,
+    stats: LifeStats?,
+    quote: String
 ) {
-    val stats = loadSavedLifeStats(context)
     val views = RemoteViews(context.packageName, R.layout.memento_widget)
 
     setupWidgetOpenAppClick(
@@ -35,7 +39,6 @@ fun updateMementoWidget(
         requestCode = WEEK_WIDGET_REQUEST_CODE
     )
 
-    val quote = getDailyMementoQuote(context)
     views.setTextViewText(R.id.widget_quote, quote)
 
 
