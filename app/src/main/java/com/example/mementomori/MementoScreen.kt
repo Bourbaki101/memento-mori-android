@@ -53,7 +53,6 @@ fun MementoScreen(modifier: Modifier = Modifier) {
     var showClearDataDialog by remember { mutableStateOf(false) }
     var showIntro by remember { mutableStateOf(!storedSettings.hasSeenIntro) }
 
-    var titleTapCount by remember { mutableStateOf(0) }
     var showEasterEgg by remember { mutableStateOf(false) }
 
     var selectedLifeWeek by remember {
@@ -119,144 +118,65 @@ fun MementoScreen(modifier: Modifier = Modifier) {
             ) {
                 when (tab) {
                     MementoTab.Today -> {
-                        Column {
-                            Text(
-                                text = "Memento Mori",
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.clickable {
-                                    titleTapCount += 1
-
-                                    if (titleTapCount >= 3) {
-                                        showEasterEgg = true
-                                        titleTapCount = 0
-                                    }
-                                }
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Recuerda que el tiempo es finito.",
-                                fontSize = 16.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            HeroLifeCard(
-                                weeksLived = stats.weeksLived,
-                                totalWeeks = stats.totalWeeks,
-                                percentLived = stats.percentLived,
-                                quote = getDailyMementoQuote(customQuotes)
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            LifeStatCard("Días vividos", formatWholeNumber(stats.daysLived))
-                            LifeStatCard("Semanas vividas", formatWholeNumber(stats.weeksLived))
-                            LifeStatCard("Semanas restantes", formatWholeNumber(stats.weeksRemaining))
-                            LifeStatCard("Total de semanas estimadas", formatWholeNumber(stats.totalWeeks))
-                            LifeStatCard("Horizonte estimado", formatDisplayDate(stats.estimatedEndDate))
-                        }
+                        TodayTab(
+                            stats = stats,
+                            customQuotes = customQuotes,
+                            onEasterEggTriggered = {
+                                showEasterEgg = true
+                            }
+                        )
                     }
 
                     MementoTab.Calendar -> {
-                        Column {
-                            Text(
-                                text = "Calendario de vida",
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Un año por renglón. Una década por bloque.",
-                                fontSize = 16.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            LifeCalendarLargeCard(
-                                weeksLived = stats.weeksLived,
-                                lifeExpectancyYears = savedLifeExpectancy,
-                                selectedWeek = selectedLifeWeek,
-                                onWeekSelected = { week ->
-                                    selectedLifeWeek = week
-                                }
-                            )
-                        }
+                        CalendarTab(
+                            stats = stats,
+                            savedLifeExpectancy = savedLifeExpectancy,
+                            selectedLifeWeek = selectedLifeWeek,
+                            onWeekSelected = { week ->
+                                selectedLifeWeek = week
+                            }
+                        )
                     }
 
                     MementoTab.Settings -> {
-                        Column {
-                            Text(
-                                text = "Ajustes",
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        SettingsTab(
+                            draftBirthDate = draftBirthDate,
+                            draftLifeExpectancy = draftLifeExpectancy,
+                            customQuotes = customQuotes,
+                            onBirthDateClick = {
+                                showDatePicker = true
+                            },
+                            onLifeExpectancyChange = { newValue ->
+                                draftLifeExpectancy = newValue
+                            },
+                            onSaveClick = { birthDate, lifeExpectancyYears ->
+                                savedBirthDate = birthDate
+                                savedLifeExpectancy = lifeExpectancyYears
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                saveMementoSettings(
+                                    context = context,
+                                    birthDate = birthDate,
+                                    lifeExpectancyYears = lifeExpectancyYears
+                                )
 
-                            Text(
-                                text = "Tus datos se guardan solo en este dispositivo.",
-                                fontSize = 16.sp
-                            )
+                                refreshMementoWidgets(context)
 
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            MementoSettingsForm(
-                                draftBirthDate = draftBirthDate,
-                                draftLifeExpectancy = draftLifeExpectancy,
-                                onBirthDateClick = {
-                                    showDatePicker = true
-                                },
-                                onLifeExpectancyChange = { newValue ->
-                                    draftLifeExpectancy = newValue
-                                },
-                                onSaveClick = { birthDate, lifeExpectancyYears ->
-                                    savedBirthDate = birthDate
-                                    savedLifeExpectancy = lifeExpectancyYears
-
-                                    saveMementoSettings(
-                                        context = context,
-                                        birthDate = birthDate,
-                                        lifeExpectancyYears = lifeExpectancyYears
-                                    )
-
-                                    refreshMementoWidgets(context)
-
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(0)
-                                    }
-                                },
-                                onClearClick = {
-                                    showClearDataDialog = true
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(0)
                                 }
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            CustomQuotesCard(
-                                customQuotes = customQuotes,
-                                onAddQuote = { quote ->
-                                    customQuotes = addCustomQuote(context, quote)
-                                    refreshMementoWidgets(context)
-                                },
-                                onDeleteQuote = { quote ->
-                                    customQuotes = deleteCustomQuote(context, quote)
-                                    refreshMementoWidgets(context)
-                                }
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            PrivacyCard()
-
-                            Spacer(modifier = Modifier.height(96.dp))
-
-                            AppSignature()
-                        }
+                            },
+                            onClearClick = {
+                                showClearDataDialog = true
+                            },
+                            onAddQuote = { quote ->
+                                customQuotes = addCustomQuote(context, quote)
+                                refreshMementoWidgets(context)
+                            },
+                            onDeleteQuote = { quote ->
+                                customQuotes = deleteCustomQuote(context, quote)
+                                refreshMementoWidgets(context)
+                            }
+                        )
                     }
                 }
             }
@@ -329,3 +249,139 @@ fun MementoScreen(modifier: Modifier = Modifier) {
         }
 }}
 
+
+@Composable
+private fun TodayTab(
+    stats: LifeStats,
+    customQuotes: List<String>,
+    onEasterEggTriggered: () -> Unit
+) {
+    var titleTapCount by remember { mutableStateOf(0) }
+
+    Column {
+        Text(
+            text = "Memento Mori",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable {
+                titleTapCount += 1
+
+                if (titleTapCount >= 3) {
+                    onEasterEggTriggered()
+                    titleTapCount = 0
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Recuerda que el tiempo es finito.",
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        HeroLifeCard(
+            weeksLived = stats.weeksLived,
+            totalWeeks = stats.totalWeeks,
+            percentLived = stats.percentLived,
+            quote = getDailyMementoQuote(customQuotes)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LifeStatCard("Días vividos", formatWholeNumber(stats.daysLived))
+        LifeStatCard("Semanas vividas", formatWholeNumber(stats.weeksLived))
+        LifeStatCard("Semanas restantes", formatWholeNumber(stats.weeksRemaining))
+        LifeStatCard("Total de semanas estimadas", formatWholeNumber(stats.totalWeeks))
+        LifeStatCard("Horizonte estimado", formatDisplayDate(stats.estimatedEndDate))
+    }
+}
+
+@Composable
+private fun CalendarTab(
+    stats: LifeStats,
+    savedLifeExpectancy: Int,
+    selectedLifeWeek: SelectedLifeWeek?,
+    onWeekSelected: (SelectedLifeWeek?) -> Unit
+) {
+    Column {
+        Text(
+            text = "Calendario de vida",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Un año por renglón. Una década por bloque.",
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        LifeCalendarLargeCard(
+            weeksLived = stats.weeksLived,
+            lifeExpectancyYears = savedLifeExpectancy,
+            selectedWeek = selectedLifeWeek,
+            onWeekSelected = onWeekSelected
+        )
+    }
+}
+
+@Composable
+private fun SettingsTab(
+    draftBirthDate: java.time.LocalDate,
+    draftLifeExpectancy: String,
+    customQuotes: List<String>,
+    onBirthDateClick: () -> Unit,
+    onLifeExpectancyChange: (String) -> Unit,
+    onSaveClick: (java.time.LocalDate, Int) -> Unit,
+    onClearClick: () -> Unit,
+    onAddQuote: (String) -> Unit,
+    onDeleteQuote: (String) -> Unit
+) {
+    Column {
+        Text(
+            text = "Ajustes",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Tus datos se guardan solo en este dispositivo.",
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        MementoSettingsForm(
+            draftBirthDate = draftBirthDate,
+            draftLifeExpectancy = draftLifeExpectancy,
+            onBirthDateClick = onBirthDateClick,
+            onLifeExpectancyChange = onLifeExpectancyChange,
+            onSaveClick = onSaveClick,
+            onClearClick = onClearClick
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CustomQuotesCard(
+            customQuotes = customQuotes,
+            onAddQuote = onAddQuote,
+            onDeleteQuote = onDeleteQuote
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PrivacyCard()
+
+        Spacer(modifier = Modifier.height(96.dp))
+
+        AppSignature()
+    }
+}
