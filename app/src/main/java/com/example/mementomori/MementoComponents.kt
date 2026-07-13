@@ -1,5 +1,6 @@
 package com.example.mementomori
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -220,43 +222,67 @@ fun LifeCalendarLargeCard(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "${formatWholeNumber(weeksLived)} semanas vividas",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = "Cada punto, una semana. Toca para saber más",
-            fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LegendDot(color = livedColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Vividas", fontSize = 13.sp)
-
-            Spacer(modifier = Modifier.size(18.dp))
-
-            LegendDot(color = futureColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Futuras", fontSize = 13.sp)
-
-            Spacer(modifier = Modifier.size(18.dp))
-
-            LegendCurrentWeekDot(color = currentWeekColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Actual", fontSize = 13.sp)
-        }
+        LifeCalendarHeader(weeksLived, livedColor, futureColor, currentWeekColor)
 
         Spacer(modifier = Modifier.height(20.dp))
+
+        LifeCalendarCanvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(totalHeight),
+            weeksLivedInt = weeksLivedInt,
+            rows = rows,
+            columns = columns,
+            totalVisualWeeks = totalVisualWeeks,
+            rowHeight = rowHeight,
+            extraGapEveryTenYears = extraGapEveryTenYears,
+            livedColor = livedColor,
+            futureColor = futureColor,
+            markerColor = markerColor,
+            currentWeekColor = currentWeekColor,
+            selectedWeekColor = selectedWeekColor,
+            textColor = textColor,
+            selectedWeek = selectedWeek,
+            onWeekSelected = onWeekSelected
+        )
+    }
+}
+
+@Composable
+fun LifeCalendarHeader(
+    weeksLived: Long,
+    livedColor: androidx.compose.ui.graphics.Color,
+    futureColor: androidx.compose.ui.graphics.Color,
+    currentWeekColor: androidx.compose.ui.graphics.Color
+) {
+    Text(
+        text = "${formatWholeNumber(weeksLived)} semanas vividas",
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.height(4.dp))
+
+    Text(
+        text = "Cada punto, una semana. Toca para saber más",
+        fontSize = 15.sp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LegendDot(color = livedColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Vividas", fontSize = 13.sp)
+
+        Spacer(modifier = Modifier.size(18.dp))
+
+        LegendDot(color = futureColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Futuras", fontSize = 13.sp)
 
         LifeCalendarCanvas(
             modifier = Modifier.fillMaxWidth().height(totalHeight),
@@ -434,7 +460,6 @@ fun LifeCalendarCanvas(
         }
     }
 }
-
 @Composable
 fun SelectedLifeWeekBottomBar(
     week: SelectedLifeWeek,
@@ -527,7 +552,7 @@ fun SelectedLifeWeekCard(
 }
 
 @Composable
-fun LegendDot(color: androidx.compose.ui.graphics.Color) {
+fun LegendDot(color: Color) {
     androidx.compose.foundation.layout.Box(
         modifier = Modifier
             .size(10.dp)
@@ -536,7 +561,7 @@ fun LegendDot(color: androidx.compose.ui.graphics.Color) {
 }
 
 @Composable
-fun LegendCurrentWeekDot(color: androidx.compose.ui.graphics.Color) {
+fun LegendCurrentWeekDot(color: Color) {
     androidx.compose.foundation.Canvas(
         modifier = Modifier.size(12.dp)
     ) {
