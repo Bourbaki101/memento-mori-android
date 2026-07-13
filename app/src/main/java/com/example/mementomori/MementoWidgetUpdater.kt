@@ -6,6 +6,8 @@ import android.content.Context
 
 fun refreshMementoWidgets(context: Context) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
+    val stats = loadSavedLifeStats(context)
+    val quote = getDailyMementoQuote(context)
 
     val stats = loadSavedLifeStats(context)
     val quote = getDailyMementoQuote(context)
