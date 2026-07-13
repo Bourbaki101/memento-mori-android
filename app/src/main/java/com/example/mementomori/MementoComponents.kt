@@ -222,41 +222,7 @@ fun LifeCalendarLargeCard(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "${formatWholeNumber(weeksLived)} semanas vividas",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = "Cada punto, una semana. Toca para saber más",
-            fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LegendDot(color = livedColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Vividas", fontSize = 13.sp)
-
-            Spacer(modifier = Modifier.size(18.dp))
-
-            LegendDot(color = futureColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Futuras", fontSize = 13.sp)
-
-            Spacer(modifier = Modifier.size(18.dp))
-
-            LegendCurrentWeekDot(color = currentWeekColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Actual", fontSize = 13.sp)
-        }
+        LifeCalendarHeader(weeksLived, livedColor, futureColor, currentWeekColor)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -264,46 +230,84 @@ fun LifeCalendarLargeCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(totalHeight),
+            weeksLivedInt = weeksLivedInt,
             rows = rows,
             columns = columns,
-            weeksLivedInt = weeksLivedInt,
             totalVisualWeeks = totalVisualWeeks,
-            selectedWeek = selectedWeek,
             rowHeight = rowHeight,
             extraGapEveryTenYears = extraGapEveryTenYears,
             livedColor = livedColor,
             futureColor = futureColor,
+            markerColor = markerColor,
             currentWeekColor = currentWeekColor,
             selectedWeekColor = selectedWeekColor,
-            markerColor = markerColor,
             textColor = textColor,
+            selectedWeek = selectedWeek,
             onWeekSelected = onWeekSelected
         )
-   }
-}
-
-
-private fun getRowTop(yearIndex: Int, rowHeightPx: Float, extraGapPx: Float): Float {
-    val completedDecadesBefore = yearIndex / 10
-    return yearIndex * rowHeightPx + completedDecadesBefore * extraGapPx
+    }
 }
 
 @Composable
-private fun LifeCalendarCanvas(
-    modifier: Modifier = Modifier,
+fun LifeCalendarHeader(
+    weeksLived: Long,
+    livedColor: androidx.compose.ui.graphics.Color,
+    futureColor: androidx.compose.ui.graphics.Color,
+    currentWeekColor: androidx.compose.ui.graphics.Color
+) {
+    Text(
+        text = "${formatWholeNumber(weeksLived)} semanas vividas",
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.height(4.dp))
+
+    Text(
+        text = "Cada punto, una semana. Toca para saber más",
+        fontSize = 15.sp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LegendDot(color = livedColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Vividas", fontSize = 13.sp)
+
+        Spacer(modifier = Modifier.size(18.dp))
+
+        LegendDot(color = futureColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Futuras", fontSize = 13.sp)
+
+        Spacer(modifier = Modifier.size(18.dp))
+
+        LegendCurrentWeekDot(color = currentWeekColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Actual", fontSize = 13.sp)
+    }
+}
+
+@Composable
+fun LifeCalendarCanvas(
+    modifier: Modifier,
+    weeksLivedInt: Int,
     rows: Int,
     columns: Int,
-    weeksLivedInt: Int,
     totalVisualWeeks: Int,
+    rowHeight: androidx.compose.ui.unit.Dp,
+    extraGapEveryTenYears: androidx.compose.ui.unit.Dp,
+    livedColor: androidx.compose.ui.graphics.Color,
+    futureColor: androidx.compose.ui.graphics.Color,
+    markerColor: androidx.compose.ui.graphics.Color,
+    currentWeekColor: androidx.compose.ui.graphics.Color,
+    selectedWeekColor: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color,
     selectedWeek: SelectedLifeWeek?,
-    rowHeight: Dp,
-    extraGapEveryTenYears: Dp,
-    livedColor: Color,
-    futureColor: Color,
-    currentWeekColor: Color,
-    selectedWeekColor: Color,
-    markerColor: Color,
-    textColor: Color,
     onWeekSelected: (SelectedLifeWeek?) -> Unit
 ) {
     Canvas(
@@ -329,7 +333,8 @@ private fun LifeCalendarCanvas(
                     var tappedYear: Int? = null
 
                     for (year in 0 until rows) {
-                        val top = getRowTop(year, rowHeightPx, extraGapPx)
+                        val completedDecadesBefore = year / 10
+                        val top = year * rowHeightPx + completedDecadesBefore * extraGapPx
                         val bottom = top + rowHeightPx
 
                         if (tapOffset.y in top..bottom) {
@@ -385,8 +390,13 @@ private fun LifeCalendarCanvas(
             color = textColor.toArgb()
         }
 
+        fun rowTop(yearIndex: Int): Float {
+            val completedDecadesBefore = yearIndex / 10
+            return yearIndex * rowHeightPx + completedDecadesBefore * extraGapPx
+        }
+
         for (year in 0 until rows) {
-            val top = getRowTop(year, rowHeightPx, extraGapPx)
+            val top = rowTop(year)
             val centerY = top + rowHeightPx / 2
 
             for (weekOfYear in 0 until columns) {
@@ -420,7 +430,7 @@ private fun LifeCalendarCanvas(
         }
 
         for (age in 10..rows step 10) {
-            val y = getRowTop(age, rowHeightPx, extraGapPx)
+            val y = rowTop(age)
 
             drawLine(
                 color = markerColor,
