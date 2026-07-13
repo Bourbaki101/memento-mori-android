@@ -12,8 +12,11 @@ class MementoProgressWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
+        val stats = loadSavedLifeStats(context)
+        val quote = getDailyMementoQuote(context)
+
         for (appWidgetId in appWidgetIds) {
-            updateMementoProgressWidget(context, appWidgetManager, appWidgetId)
+            updateMementoProgressWidget(context, appWidgetManager, appWidgetId, stats, quote)
         }
     }
 }
@@ -21,9 +24,10 @@ class MementoProgressWidgetProvider : AppWidgetProvider() {
 fun updateMementoProgressWidget(
     context: Context,
     appWidgetManager: AppWidgetManager,
-    appWidgetId: Int
+    appWidgetId: Int,
+    stats: LifeStats?,
+    quote: String
 ) {
-    val stats = loadSavedLifeStats(context)
     val views = RemoteViews(context.packageName, R.layout.memento_progress_widget)
 
     setupWidgetOpenAppClick(
@@ -55,7 +59,7 @@ fun updateMementoProgressWidget(
 
         views.setTextViewText(
             R.id.progress_widget_quote,
-            getDailyMementoQuote(context)
+            quote
         )
     } else {
         setEmptyProgressWidgetState(views)
