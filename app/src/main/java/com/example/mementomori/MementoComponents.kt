@@ -284,23 +284,11 @@ fun LifeCalendarHeader(
         Spacer(modifier = Modifier.size(6.dp))
         Text(text = "Futuras", fontSize = 13.sp)
 
-        LifeCalendarCanvas(
-            modifier = Modifier.fillMaxWidth().height(totalHeight),
-            weeksLivedInt = weeksLivedInt,
-            rows = rows,
-            columns = columns,
-            totalVisualWeeks = totalVisualWeeks,
-            selectedWeek = selectedWeek,
-            onWeekSelected = onWeekSelected,
-            rowHeight = rowHeight,
-            extraGapEveryTenYears = extraGapEveryTenYears,
-            livedColor = livedColor,
-            futureColor = futureColor,
-            currentWeekColor = currentWeekColor,
-            selectedWeekColor = selectedWeekColor,
-            markerColor = markerColor,
-            textColor = textColor
-        )
+        Spacer(modifier = Modifier.size(18.dp))
+
+        LegendCurrentWeekDot(color = currentWeekColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Actual", fontSize = 13.sp)
     }
 }
 
