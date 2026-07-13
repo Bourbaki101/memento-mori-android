@@ -871,13 +871,70 @@ fun CompactBottomBarItem(
     }
 }
 @Composable
+fun CustomQuoteInput(
+    onAddQuote: (String) -> Unit
+) {
+    var newQuote by remember { mutableStateOf("") }
+
+    OutlinedTextField(
+        value = newQuote,
+        onValueChange = { newQuote = it },
+        label = { Text("Nueva frase") },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = false,
+        maxLines = 3
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Button(
+        onClick = {
+            val cleanQuote = newQuote.trim()
+
+            if (cleanQuote.isNotBlank()) {
+                onAddQuote(cleanQuote)
+                newQuote = ""
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Agregar frase")
+    }
+}
+
+@Composable
+fun CustomQuoteList(
+    customQuotes: List<String>,
+    onDeleteQuote: (String) -> Unit
+) {
+    if (customQuotes.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Tus frases",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        customQuotes.forEach { quote ->
+            CustomQuoteRow(
+                quote = quote,
+                onDeleteClick = {
+                    onDeleteQuote(quote)
+                }
+            )
+        }
+    }
+}
+
+@Composable
 fun CustomQuotesCard(
     customQuotes: List<String>,
     onAddQuote: (String) -> Unit,
     onDeleteQuote: (String) -> Unit
 ) {
-    var newQuote by remember { mutableStateOf("") }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -900,51 +957,8 @@ fun CustomQuotesCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = newQuote,
-                onValueChange = { newQuote = it },
-                label = { Text("Nueva frase") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = false,
-                maxLines = 3
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = {
-                    val cleanQuote = newQuote.trim()
-
-                    if (cleanQuote.isNotBlank()) {
-                        onAddQuote(cleanQuote)
-                        newQuote = ""
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Agregar frase")
-            }
-
-            if (customQuotes.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "Tus frases",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                customQuotes.forEach { quote ->
-                    CustomQuoteRow(
-                        quote = quote,
-                        onDeleteClick = {
-                            onDeleteQuote(quote)
-                        }
-                    )
-                }
-            }
+            CustomQuoteInput(onAddQuote = onAddQuote)
+            CustomQuoteList(customQuotes = customQuotes, onDeleteQuote = onDeleteQuote)
         }
     }
 }
