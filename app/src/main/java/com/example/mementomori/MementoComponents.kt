@@ -514,35 +514,23 @@ fun LegendCurrentWeekDot(color: androidx.compose.ui.graphics.Color) {
 }
 
 @Composable
-fun MementoSettingsForm(
+fun BirthDateSelector(
     draftBirthDate: LocalDate,
-    draftLifeExpectancy: String,
-    onBirthDateClick: () -> Unit,
-    onLifeExpectancyChange: (String) -> Unit,
-    onSaveClick: (LocalDate, Int) -> Unit,
-    onClearClick: (() -> Unit)? = null
-){
-    val validation = validateMementoSettings(
-        birthDate = draftBirthDate,
-        lifeExpectancyText = draftLifeExpectancy
-    )
-
-    Text(
-        text = "Tu información",
-        fontWeight = FontWeight.Bold
-    )
-
-    Spacer(modifier = Modifier.height(12.dp))
-
+    onBirthDateClick: () -> Unit
+) {
     Button(
         onClick = onBirthDateClick,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(text = "Fecha de nacimiento: ${formatDisplayDate(draftBirthDate)}")
     }
+}
 
-    Spacer(modifier = Modifier.height(8.dp))
-
+@Composable
+fun LifeExpectancyInput(
+    draftLifeExpectancy: String,
+    onLifeExpectancyChange: (String) -> Unit
+) {
     OutlinedTextField(
         value = draftLifeExpectancy,
         onValueChange = { newValue ->
@@ -552,9 +540,12 @@ fun MementoSettingsForm(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth()
     )
+}
 
-    Spacer(modifier = Modifier.height(16.dp))
-
+@Composable
+fun SettingsValidationErrors(
+    validation: MementoSettingsValidation
+) {
     if (!validation.isValidLifeExpectancy) {
         Text(
             text = "Ingresa una esperanza de vida válida, entre $MIN_LIFE_EXPECTANCY_YEARS y $MAX_LIFE_EXPECTANCY_YEARS."
@@ -566,7 +557,15 @@ fun MementoSettingsForm(
         Text(text = "La fecha de nacimiento no puede estar en el futuro.")
         Spacer(modifier = Modifier.height(8.dp))
     }
+}
 
+@Composable
+fun SettingsActions(
+    validation: MementoSettingsValidation,
+    draftBirthDate: LocalDate,
+    onSaveClick: (LocalDate, Int) -> Unit,
+    onClearClick: (() -> Unit)?
+) {
     Button(
         onClick = {
             val lifeValue = validation.lifeExpectancyYears
@@ -593,6 +592,51 @@ fun MementoSettingsForm(
             )
         }
     }
+}
+
+@Composable
+fun MementoSettingsForm(
+    draftBirthDate: LocalDate,
+    draftLifeExpectancy: String,
+    onBirthDateClick: () -> Unit,
+    onLifeExpectancyChange: (String) -> Unit,
+    onSaveClick: (LocalDate, Int) -> Unit,
+    onClearClick: (() -> Unit)? = null
+){
+    val validation = validateMementoSettings(
+        birthDate = draftBirthDate,
+        lifeExpectancyText = draftLifeExpectancy
+    )
+
+    Text(
+        text = "Tu información",
+        fontWeight = FontWeight.Bold
+    )
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    BirthDateSelector(
+        draftBirthDate = draftBirthDate,
+        onBirthDateClick = onBirthDateClick
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    LifeExpectancyInput(
+        draftLifeExpectancy = draftLifeExpectancy,
+        onLifeExpectancyChange = onLifeExpectancyChange
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    SettingsValidationErrors(validation = validation)
+
+    SettingsActions(
+        validation = validation,
+        draftBirthDate = draftBirthDate,
+        onSaveClick = onSaveClick,
+        onClearClick = onClearClick
+    )
 }
 
 
