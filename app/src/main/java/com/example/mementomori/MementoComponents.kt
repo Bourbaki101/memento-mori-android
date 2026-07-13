@@ -284,11 +284,23 @@ fun LifeCalendarHeader(
         Spacer(modifier = Modifier.size(6.dp))
         Text(text = "Futuras", fontSize = 13.sp)
 
-        Spacer(modifier = Modifier.size(18.dp))
-
-        LegendCurrentWeekDot(color = currentWeekColor)
-        Spacer(modifier = Modifier.size(6.dp))
-        Text(text = "Actual", fontSize = 13.sp)
+        LifeCalendarCanvas(
+            modifier = Modifier.fillMaxWidth().height(totalHeight),
+            weeksLivedInt = weeksLivedInt,
+            rows = rows,
+            columns = columns,
+            totalVisualWeeks = totalVisualWeeks,
+            selectedWeek = selectedWeek,
+            onWeekSelected = onWeekSelected,
+            rowHeight = rowHeight,
+            extraGapEveryTenYears = extraGapEveryTenYears,
+            livedColor = livedColor,
+            futureColor = futureColor,
+            currentWeekColor = currentWeekColor,
+            selectedWeekColor = selectedWeekColor,
+            markerColor = markerColor,
+            textColor = textColor
+        )
     }
 }
 
@@ -299,16 +311,16 @@ fun LifeCalendarCanvas(
     rows: Int,
     columns: Int,
     totalVisualWeeks: Int,
+    selectedWeek: SelectedLifeWeek?,
+    onWeekSelected: (SelectedLifeWeek?) -> Unit,
     rowHeight: androidx.compose.ui.unit.Dp,
     extraGapEveryTenYears: androidx.compose.ui.unit.Dp,
     livedColor: androidx.compose.ui.graphics.Color,
     futureColor: androidx.compose.ui.graphics.Color,
-    markerColor: androidx.compose.ui.graphics.Color,
     currentWeekColor: androidx.compose.ui.graphics.Color,
     selectedWeekColor: androidx.compose.ui.graphics.Color,
-    textColor: androidx.compose.ui.graphics.Color,
-    selectedWeek: SelectedLifeWeek?,
-    onWeekSelected: (SelectedLifeWeek?) -> Unit
+    markerColor: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color
 ) {
     Canvas(
         modifier = modifier
