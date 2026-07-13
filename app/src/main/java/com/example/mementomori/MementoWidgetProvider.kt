@@ -14,6 +14,7 @@ class MementoWidgetProvider : AppWidgetProvider() {
     ) {
         val stats = loadSavedLifeStats(context)
         val quote = getDailyMementoQuote(context)
+
         for (appWidgetId in appWidgetIds) {
             updateMementoWidget(context, appWidgetManager, appWidgetId, stats, quote)
         }
@@ -26,8 +27,8 @@ fun updateMementoWidget(
     context: Context,
     appWidgetManager: AppWidgetManager,
     appWidgetId: Int,
-    stats: LifeStats? = loadSavedLifeStats(context),
-    quote: String = getDailyMementoQuote(context)
+    stats: LifeStats?,
+    quote: String
 ) {
     val views = RemoteViews(context.packageName, R.layout.memento_widget)
 
