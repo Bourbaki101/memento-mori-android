@@ -220,182 +220,229 @@ fun LifeCalendarLargeCard(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "${formatWholeNumber(weeksLived)} semanas vividas",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = "Cada punto, una semana. Toca para saber más",
-            fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LegendDot(color = livedColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Vividas", fontSize = 13.sp)
-
-            Spacer(modifier = Modifier.size(18.dp))
-
-            LegendDot(color = futureColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Futuras", fontSize = 13.sp)
-
-            Spacer(modifier = Modifier.size(18.dp))
-
-            LegendCurrentWeekDot(color = currentWeekColor)
-            Spacer(modifier = Modifier.size(6.dp))
-            Text(text = "Actual", fontSize = 13.sp)
-        }
+        LifeCalendarHeader(weeksLived, livedColor, futureColor, currentWeekColor)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Canvas(
+        LifeCalendarCanvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(totalHeight)
-                .pointerInput(weeksLivedInt, rows) {
-                    detectTapGestures { tapOffset ->
-                        val labelWidth = 30.dp.toPx()
-                        val availableWidth = size.width.toFloat() - labelWidth
-                        val cellWidth = availableWidth / columns
+                .height(totalHeight),
+            weeksLivedInt = weeksLivedInt,
+            rows = rows,
+            columns = columns,
+            totalVisualWeeks = totalVisualWeeks,
+            rowHeight = rowHeight,
+            extraGapEveryTenYears = extraGapEveryTenYears,
+            livedColor = livedColor,
+            futureColor = futureColor,
+            markerColor = markerColor,
+            currentWeekColor = currentWeekColor,
+            selectedWeekColor = selectedWeekColor,
+            textColor = textColor,
+            selectedWeek = selectedWeek,
+            onWeekSelected = onWeekSelected
+        )
+    }
+}
 
-                        val rowHeightPx = rowHeight.toPx()
-                        val extraGapPx = extraGapEveryTenYears.toPx()
+@Composable
+fun LifeCalendarHeader(
+    weeksLived: Long,
+    livedColor: androidx.compose.ui.graphics.Color,
+    futureColor: androidx.compose.ui.graphics.Color,
+    currentWeekColor: androidx.compose.ui.graphics.Color
+) {
+    Text(
+        text = "${formatWholeNumber(weeksLived)} semanas vividas",
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold
+    )
 
-                        if (tapOffset.x < labelWidth) {
-                            onWeekSelected(null)
-                            return@detectTapGestures
-                        }
+    Spacer(modifier = Modifier.height(4.dp))
 
-                        val weekOfYear = ((tapOffset.x - labelWidth) / cellWidth)
-                            .toInt()
-                            .coerceIn(0, columns - 1)
+    Text(
+        text = "Cada punto, una semana. Toca para saber más",
+        fontSize = 15.sp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 
-                        var tappedYear: Int? = null
+    Spacer(modifier = Modifier.height(16.dp))
 
-                        for (year in 0 until rows) {
-                            val completedDecadesBefore = year / 10
-                            val top = year * rowHeightPx + completedDecadesBefore * extraGapPx
-                            val bottom = top + rowHeightPx
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LegendDot(color = livedColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Vividas", fontSize = 13.sp)
 
-                            if (tapOffset.y in top..bottom) {
-                                tappedYear = year
-                                break
-                            }
-                        }
+        Spacer(modifier = Modifier.size(18.dp))
 
-                        val year = tappedYear
+        LegendDot(color = futureColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Futuras", fontSize = 13.sp)
 
-                        if (year == null) {
-                            onWeekSelected(null)
-                            return@detectTapGestures
-                        }
+        Spacer(modifier = Modifier.size(18.dp))
 
-                        val weekIndex = year * columns + weekOfYear
+        LegendCurrentWeekDot(color = currentWeekColor)
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(text = "Actual", fontSize = 13.sp)
+    }
+}
 
-                        if (weekIndex !in 0 until totalVisualWeeks) {
-                            onWeekSelected(null)
-                            return@detectTapGestures
-                        }
+@Composable
+fun LifeCalendarCanvas(
+    modifier: Modifier,
+    weeksLivedInt: Int,
+    rows: Int,
+    columns: Int,
+    totalVisualWeeks: Int,
+    rowHeight: androidx.compose.ui.unit.Dp,
+    extraGapEveryTenYears: androidx.compose.ui.unit.Dp,
+    livedColor: androidx.compose.ui.graphics.Color,
+    futureColor: androidx.compose.ui.graphics.Color,
+    markerColor: androidx.compose.ui.graphics.Color,
+    currentWeekColor: androidx.compose.ui.graphics.Color,
+    selectedWeekColor: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color,
+    selectedWeek: SelectedLifeWeek?,
+    onWeekSelected: (SelectedLifeWeek?) -> Unit
+) {
+    Canvas(
+        modifier = modifier
+            .pointerInput(weeksLivedInt, rows) {
+                detectTapGestures { tapOffset ->
+                    val labelWidth = 30.dp.toPx()
+                    val availableWidth = size.width.toFloat() - labelWidth
+                    val cellWidth = availableWidth / columns
 
-                        val status = when {
-                            weekIndex < weeksLivedInt -> "Vivida"
-                            weekIndex == weeksLivedInt -> "Semana actual"
-                            else -> "Por vivir"
-                        }
+                    val rowHeightPx = rowHeight.toPx()
+                    val extraGapPx = extraGapEveryTenYears.toPx()
 
-                        onWeekSelected(
-                            SelectedLifeWeek(
-                                weekIndex = weekIndex,
-                                ageYear = year,
-                                weekOfYear = weekOfYear + 1,
-                                status = status
-                            )
-                        )
+                    if (tapOffset.x < labelWidth) {
+                        onWeekSelected(null)
+                        return@detectTapGestures
                     }
-                }
-        ) {
-            val labelWidth = 30.dp.toPx()
-            val availableWidth = size.width - labelWidth
-            val cellWidth = availableWidth / columns
 
-            val rowHeightPx = rowHeight.toPx()
-            val extraGapPx = extraGapEveryTenYears.toPx()
-            val radius = 2.45.dp.toPx()
-            val currentWeekRadius = 4.2.dp.toPx()
-            val selectedWeekRadius = 5.1.dp.toPx()
+                    val weekOfYear = ((tapOffset.x - labelWidth) / cellWidth)
+                        .toInt()
+                        .coerceIn(0, columns - 1)
 
-            val textPaint = android.graphics.Paint().apply {
-                isAntiAlias = true
-                textSize = 11.sp.toPx()
-                color = textColor.toArgb()
-            }
+                    var tappedYear: Int? = null
 
-            fun rowTop(yearIndex: Int): Float {
-                val completedDecadesBefore = yearIndex / 10
-                return yearIndex * rowHeightPx + completedDecadesBefore * extraGapPx
-            }
+                    for (year in 0 until rows) {
+                        val completedDecadesBefore = year / 10
+                        val top = year * rowHeightPx + completedDecadesBefore * extraGapPx
+                        val bottom = top + rowHeightPx
 
-            for (year in 0 until rows) {
-                val top = rowTop(year)
-                val centerY = top + rowHeightPx / 2
+                        if (tapOffset.y in top..bottom) {
+                            tappedYear = year
+                            break
+                        }
+                    }
 
-                for (weekOfYear in 0 until columns) {
+                    val year = tappedYear
+
+                    if (year == null) {
+                        onWeekSelected(null)
+                        return@detectTapGestures
+                    }
+
                     val weekIndex = year * columns + weekOfYear
-                    val x = labelWidth + weekOfYear * cellWidth + cellWidth / 2
 
-                    drawCircle(
-                        color = if (weekIndex < weeksLivedInt) livedColor else futureColor,
-                        radius = radius,
-                        center = Offset(x, centerY)
+                    if (weekIndex !in 0 until totalVisualWeeks) {
+                        onWeekSelected(null)
+                        return@detectTapGestures
+                    }
+
+                    val status = when {
+                        weekIndex < weeksLivedInt -> "Vivida"
+                        weekIndex == weeksLivedInt -> "Semana actual"
+                        else -> "Por vivir"
+                    }
+
+                    onWeekSelected(
+                        SelectedLifeWeek(
+                            weekIndex = weekIndex,
+                            ageYear = year,
+                            weekOfYear = weekOfYear + 1,
+                            status = status
+                        )
                     )
-
-                    if (weekIndex == weeksLivedInt) {
-                        drawCircle(
-                            color = currentWeekColor,
-                            radius = currentWeekRadius,
-                            center = Offset(x, centerY),
-                            style = Stroke(width = 1.6.dp.toPx())
-                        )
-                    }
-
-                    if (selectedWeek?.weekIndex == weekIndex) {
-                        drawCircle(
-                            color = selectedWeekColor,
-                            radius = selectedWeekRadius,
-                            center = Offset(x, centerY),
-                            style = Stroke(width = 2.dp.toPx())
-                        )
-                    }
                 }
             }
+    ) {
+        val labelWidth = 30.dp.toPx()
+        val availableWidth = size.width - labelWidth
+        val cellWidth = availableWidth / columns
 
-            for (age in 10..rows step 10) {
-                val y = rowTop(age)
+        val rowHeightPx = rowHeight.toPx()
+        val extraGapPx = extraGapEveryTenYears.toPx()
+        val radius = 2.45.dp.toPx()
+        val currentWeekRadius = 4.2.dp.toPx()
+        val selectedWeekRadius = 5.1.dp.toPx()
 
-                drawLine(
-                    color = markerColor,
-                    start = Offset(labelWidth, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = 1.5.dp.toPx()
+        val textPaint = android.graphics.Paint().apply {
+            isAntiAlias = true
+            textSize = 11.sp.toPx()
+            color = textColor.toArgb()
+        }
+
+        fun rowTop(yearIndex: Int): Float {
+            val completedDecadesBefore = yearIndex / 10
+            return yearIndex * rowHeightPx + completedDecadesBefore * extraGapPx
+        }
+
+        for (year in 0 until rows) {
+            val top = rowTop(year)
+            val centerY = top + rowHeightPx / 2
+
+            for (weekOfYear in 0 until columns) {
+                val weekIndex = year * columns + weekOfYear
+                val x = labelWidth + weekOfYear * cellWidth + cellWidth / 2
+
+                drawCircle(
+                    color = if (weekIndex < weeksLivedInt) livedColor else futureColor,
+                    radius = radius,
+                    center = Offset(x, centerY)
                 )
 
-                drawContext.canvas.nativeCanvas.drawText(
-                    age.toString(),
-                    0f,
-                    y - 2.dp.toPx(),
-                    textPaint
-                )
+                if (weekIndex == weeksLivedInt) {
+                    drawCircle(
+                        color = currentWeekColor,
+                        radius = currentWeekRadius,
+                        center = Offset(x, centerY),
+                        style = Stroke(width = 1.6.dp.toPx())
+                    )
+                }
+
+                if (selectedWeek?.weekIndex == weekIndex) {
+                    drawCircle(
+                        color = selectedWeekColor,
+                        radius = selectedWeekRadius,
+                        center = Offset(x, centerY),
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                }
             }
+        }
+
+        for (age in 10..rows step 10) {
+            val y = rowTop(age)
+
+            drawLine(
+                color = markerColor,
+                start = Offset(labelWidth, y),
+                end = Offset(size.width, y),
+                strokeWidth = 1.5.dp.toPx()
+            )
+
+            drawContext.canvas.nativeCanvas.drawText(
+                age.toString(),
+                0f,
+                y - 2.dp.toPx(),
+                textPaint
+            )
         }
     }
 }

@@ -9,8 +9,6 @@ fun refreshMementoWidgets(context: Context) {
     val stats = loadSavedLifeStats(context)
     val quote = getDailyMementoQuote(context)
 
-    val stats = loadSavedLifeStats(context)
-    val quote = getDailyMementoQuote(context)
 
     val weekWidgetIds = appWidgetManager.getAppWidgetIds(
         ComponentName(context, MementoWidgetProvider::class.java)
